@@ -61,7 +61,7 @@ class SudokuGUI:
 		submit_button = Button(self.master, text = 'submit', command = self.submit)
 		submit_button.grid(column = 1, row = 3)
 
-
+	#todo - Submit button should call the solver class that way you dont have to close the GUI to get the results
 	def submit(self):
 		valid_entries = ['1','2','3','4','5','6','7','8','9','']
 		input = []
@@ -102,7 +102,7 @@ class solver:
 						,[19,22,25,46,49,52,73,76,79]
 						,[20,23,26,47,50,53,74,77,80]]
 		text_file = open('Sudoku-File.txt','r')
-		self.input = text_file.readline(81)
+		self.input = list(text_file.readline(81))
 		text_file.close()
 
 	#Double check this method to make sure it works correctly
@@ -123,14 +123,63 @@ class solver:
 						return False
 		return True
 
+		#Maybe bring find next zero part to bottom and make a find FIRST zero function?
+	def recursion(self, position):
+		self.testprint()
+		#return case
+		if position == 81:
+			return True
+		#Finds next empty space
+		while self.input[position] != '0':
+			position += 1
+			if position == 81:
+				return True
 
-	def recursive_solver(self):
+		i = 0
+		while True:
+			print('trying recursion at ' + str(position) + ' with ' + str(i+1))
+			if self.position_checker(position, i+1) == True:
+				self.input[position] = i + 1
+				if self.recursion(position + 1) == False:
+					self.input[position] = '0'
+					if i == 8:
+						print('false 1')
+						return False
+					else:
+						i += 1
+					continue
+				else:
+					return(self.recursion(position + 1))
+					i+= 1
+
+			elif i == 8:
+				print('false 3')
+				self.input[position] = '0'
+				i = 0
+				return False
+			else:
+				i += 1
 
 
 
+
+
+
+	#This is a function used only for testing. Delete for final project
+	def testprint(self):
+		for i in self.rows:
+			print('')
+			for j in i:
+				print(str(self.input[j]) + ' ', end = '')
+				if (j + 1) % 3 == 0:
+					print('|', end = '')
+		print('')
+'''
 root = Tk()
 sudoku_gui = SudokuGUI(root)
 sudoku_gui.fill()
 root.mainloop()
-
-
+'''
+solver = solver()
+print('final value is ' + str(solver.recursion(0)))
+solver.testprint()
