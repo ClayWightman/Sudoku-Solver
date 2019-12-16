@@ -58,10 +58,10 @@ class SudokuGUI:
 					entry_row += 1
 			else:
 				entry_column += 1
-		submit_button = Button(self.master, text = 'submit', command = self.submit)
+		submit_button = Button(self.master, text = 'Solve', command = self.submit)
 		submit_button.grid(column = 1, row = 3)
 
-	#todo - Submit button should call the solver class that way you dont have to close the GUI to get the results
+
 	def submit(self):
 		valid_entries = ['1','2','3','4','5','6','7','8','9','']
 		input = []
@@ -78,6 +78,13 @@ class SudokuGUI:
 		for i in input:
 			text_file.write(str(i))
 		text_file.close()
+		self.solver = solver()
+		self.solver.recursion(0)
+		self.solution = self.solver.input
+		for i in range(len(self.solution)):
+			self.entry_dict['entry' + str(i)].delete(0, END)
+			self.entry_dict['entry' + str(i)].insert(INSERT,self.solution[i]) 
+
 
 
 
@@ -125,7 +132,6 @@ class solver:
 
 		#Maybe bring find next zero part to bottom and make a find FIRST zero function?
 	def recursion(self, position):
-		self.testprint()
 		#return case
 		if position == 81:
 			return True
@@ -137,13 +143,11 @@ class solver:
 
 		i = 0
 		while True:
-			print('trying recursion at ' + str(position) + ' with ' + str(i+1))
 			if self.position_checker(position, i+1) == True:
 				self.input[position] = i + 1
 				if self.recursion(position + 1) == False:
 					self.input[position] = '0'
 					if i == 8:
-						print('false 1')
 						return False
 					else:
 						i += 1
@@ -153,7 +157,6 @@ class solver:
 					i+= 1
 
 			elif i == 8:
-				print('false 3')
 				self.input[position] = '0'
 				i = 0
 				return False
@@ -164,8 +167,8 @@ class solver:
 
 
 
-
-	#This is a function used only for testing. Delete for final project
+'''
+	This is a function of the solver class used only for testing.
 	def testprint(self):
 		for i in self.rows:
 			print('')
@@ -175,11 +178,8 @@ class solver:
 					print('|', end = '')
 		print('')
 '''
+
 root = Tk()
 sudoku_gui = SudokuGUI(root)
 sudoku_gui.fill()
 root.mainloop()
-'''
-solver = solver()
-print('final value is ' + str(solver.recursion(0)))
-solver.testprint()
